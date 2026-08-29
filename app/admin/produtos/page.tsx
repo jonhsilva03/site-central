@@ -1,12 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
-);
+import { supabase } from "@/lib/supabase";
 
 type Produto = {
   id: string;
@@ -20,18 +15,6 @@ type Produto = {
   preco_venda: number;
   estoque: number;
   estoque_minimo: number;
-};
-
-const produtoVazio = {
-  nome: "",
-  sku: "",
-  marca: "",
-  modelo: "",
-  descricao: "",
-  precoCusto: "",
-  precoVenda: "",
-  estoque: "",
-  estoqueMinimo: "",
 };
 
 export default function ProdutosPage() {
@@ -79,6 +62,8 @@ export default function ProdutosPage() {
   }
 
   useEffect(() => {
+    // O primeiro carregamento consulta um sistema externo (Supabase).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     carregarProdutos();
   }, []);
 
@@ -272,7 +257,7 @@ export default function ProdutosPage() {
 
   const estoqueBaixo = produtos.filter(
     (produto) =>
-      produto.estoque <= produto.estoque_minimo
+      produto.estoque > 0 && produto.estoque <= produto.estoque_minimo
   ).length;
 
   const semEstoque = produtos.filter(
