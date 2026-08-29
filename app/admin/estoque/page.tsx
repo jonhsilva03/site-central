@@ -1,12 +1,7 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-);
+import { supabase } from "@/lib/supabase";
 
 type Produto = {
   id: string;
@@ -137,6 +132,8 @@ export default function EstoquePage() {
   }, []);
 
   useEffect(() => {
+    // O primeiro carregamento consulta um sistema externo (Supabase).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void carregarDados();
   }, [carregarDados]);
 
@@ -166,8 +163,16 @@ export default function EstoquePage() {
 
     const quantidadeNumero = Number(quantidade);
 
-    if (!Number.isInteger(quantidadeNumero) || quantidadeNumero <= 0) {
-      setMensagemModal("Informe uma quantidade inteira maior que zero.");
+    const quantidadeInvalida =
+      !Number.isInteger(quantidadeNumero) ||
+      (tipo === "ajuste" ? quantidadeNumero < 0 : quantidadeNumero <= 0);
+
+    if (quantidadeInvalida) {
+      setMensagemModal(
+        tipo === "ajuste"
+          ? "Informe um estoque inteiro igual ou maior que zero."
+          : "Informe uma quantidade inteira maior que zero.",
+      );
       return;
     }
 
@@ -665,7 +670,7 @@ export default function EstoquePage() {
                 </span>
                 <input
                   type="number"
-                  min="1"
+                  min={tipo === "ajuste" ? "0" : "1"}
                   step="1"
                   value={quantidade}
                   onChange={(evento) => setQuantidade(evento.target.value)}
