@@ -1,0 +1,6 @@
+{
+  "name": "Central Phones",
+  "description": "Central Phones - Assistência técnica especializada, catálogo de produtos com compra direta via WhatsApp, upload de fotos e painel administrativo completo (produtos, estoque auditado, clientes, ordens de serviço e configurações).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
